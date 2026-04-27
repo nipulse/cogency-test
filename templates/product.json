@@ -264,6 +264,13 @@
         "padding-block-end": 0
       }
     },
+    "frequently-bought-together": {
+      "type": "frequently-bought-together",
+      "settings": {
+        "heading": "Frequently Bought Together",
+        "color_scheme": "scheme-1"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -408,6 +415,7 @@
   },
   "order": [
     "main",
+    "frequently-bought-together",
     "product_recommendations_qggXJq"
   ]
 }
