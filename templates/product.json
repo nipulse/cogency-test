@@ -270,13 +270,6 @@
         "padding-block-end": 0
       }
     },
-    "frequently-bought-together": {
-      "type": "frequently-bought-together",
-      "settings": {
-        "heading": "Frequently Bought Together",
-        "color_scheme": "scheme-1"
-      }
-    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -398,11 +391,10 @@
       "block_order": [
         "text_cbcgyb"
       ],
-      "disabled": true,
       "name": "t:names.product_recommendations",
       "settings": {
         "product": "{{ closest.product }}",
-        "recommendation_type": "related",
+        "recommendation_type": "complementary",
         "layout_type": "grid",
         "carousel_on_mobile": false,
         "max_products": 4,
@@ -422,7 +414,6 @@
   },
   "order": [
     "main",
-    "frequently-bought-together",
     "product_recommendations_qggXJq"
   ]
 }
