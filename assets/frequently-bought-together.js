@@ -96,10 +96,22 @@ class FbtBundle extends HTMLElement {
       return;
     }
 
+    // Collect section IDs from cart-items-component elements so the theme's
+    // cart drawer receives updated section HTML (matches how product-form.js works)
+    const sectionIds = [];
+    document.querySelectorAll('cart-items-component').forEach((el) => {
+      if (el instanceof HTMLElement && el.dataset.sectionId) {
+        sectionIds.push(el.dataset.sectionId);
+      }
+    });
+
     const items = cards.map((card) => ({
       id: parseInt(card.dataset.variantId, 10),
       quantity: 1,
     }));
+
+    const payload = { items };
+    if (sectionIds.length) payload.sections = sectionIds.join(',');
 
     this._setLoading(true);
 
@@ -107,17 +119,28 @@ class FbtBundle extends HTMLElement {
       const response = await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.description || data.message || 'Could not add items to cart.');
 
-      // fires the theme's native cart:update event so the cart drawer opens
+      // Fetch the full cart so cart-items-component and quantity selectors
+      // can update correctly (matches how product-form.js works)
+      const cartResponse = await fetch('/cart.js');
+      const cart = await cartResponse.json();
+
       document.dispatchEvent(
         new CustomEvent('cart:update', {
           bubbles: true,
-          detail: { resource: data, data: { itemCount: data.item_count, source: 'fbt-bundle' } },
+          detail: {
+            resource: cart,
+            data: {
+              source: 'fbt-bundle',
+              itemCount: cart.item_count,
+              sections: data.sections,
+            },
+          },
         })
       );
 
