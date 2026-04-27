@@ -1,0 +1,402 @@
+{%- liquid
+  assign fbt_complementary = product.metafields.custom.complementary_products.value
+-%}
+
+{%- if fbt_complementary != blank -%}
+
+<style>
+  .fbt-section {
+    container-type: inline-size;
+  }
+
+  .fbt-section__inner {
+    padding-block: 4rem;
+    padding-inline: var(--page-margin, 1.5rem);
+    max-width: var(--page-width, 1200px);
+    margin-inline: auto;
+  }
+
+  .fbt-section__heading {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 2.5rem;
+    color: var(--color-foreground);
+  }
+
+  .fbt-products {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .fbt-separator-item {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    padding-bottom: 3.5rem;
+  }
+
+  .fbt-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--color-foreground);
+    opacity: 0.4;
+  }
+
+  .fbt-product {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 190px;
+    gap: 0.75rem;
+  }
+
+  .fbt-product__checkbox-wrap {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 2;
+    line-height: 0;
+  }
+
+  .fbt-product__checkbox {
+    width: 1.125rem;
+    height: 1.125rem;
+    cursor: pointer;
+    accent-color: var(--color-primary, var(--color-foreground));
+    border-radius: 3px;
+  }
+
+  .fbt-product__image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid var(--color-border, rgba(0,0,0,0.08));
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: var(--color-input-background, #f4f4f4);
+  }
+
+  .fbt-product--checked .fbt-product__image-wrapper {
+    border-color: var(--color-primary, var(--color-foreground));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary, currentColor) 20%, transparent);
+  }
+
+  .fbt-product--unchecked {
+    opacity: 0.45;
+  }
+
+  .fbt-product__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.2s ease;
+  }
+
+  .fbt-product__no-image {
+    width: 100%;
+    height: 100%;
+    background: var(--color-input-background, #ebebeb);
+  }
+
+  .fbt-product__info {
+    text-align: center;
+    width: 100%;
+    padding-inline: 0.25rem;
+  }
+
+  .fbt-product__title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0 0 0.25rem;
+    color: var(--color-foreground);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .fbt-product__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .fbt-product__title a:hover {
+    text-decoration: underline;
+  }
+
+  .fbt-product__price {
+    font-size: 0.8125rem;
+    margin: 0;
+    color: var(--color-foreground);
+    opacity: 0.75;
+  }
+
+  .fbt-footer {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .fbt-total {
+    font-size: 0.9375rem;
+    margin: 0;
+    color: var(--color-foreground);
+  }
+
+  .fbt-total__label {
+    opacity: 0.65;
+    margin-right: 0.35rem;
+  }
+
+  .fbt-total__price {
+    font-weight: 600;
+  }
+
+  .fbt-btn {
+    min-width: 220px;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .fbt-btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .fbt-btn--success {
+    background-color: var(--color-success, #1a8a4a) !important;
+    border-color: var(--color-success, #1a8a4a) !important;
+  }
+
+  .fbt-live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .fbt-products {
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .fbt-separator-item {
+      padding-bottom: 0;
+      padding-inline: 0;
+    }
+
+    .fbt-separator {
+      width: auto;
+      padding-block: 0.25rem;
+      font-size: 1.25rem;
+    }
+
+    .fbt-product {
+      flex-direction: row;
+      width: 100%;
+      max-width: 360px;
+      align-items: center;
+    }
+
+    .fbt-product__checkbox-wrap {
+      position: static;
+      order: -1;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .fbt-product__image-wrapper {
+      width: 80px;
+      flex-shrink: 0;
+      aspect-ratio: 1 / 1;
+    }
+
+    .fbt-product__info {
+      text-align: left;
+      padding-inline: 0;
+    }
+  }
+</style>
+
+<script src="{{ 'frequently-bought-together.js' | asset_url }}" type="module"></script>
+
+<div class="color-{{ section.settings.color_scheme }}">
+  <fbt-bundle
+    class="fbt-section__inner"
+    data-currency="{{ shop.currency }}"
+    data-section-id="{{ section.id }}"
+  >
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="fbt-section__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <ul class="fbt-products" role="list" aria-label="Bundle products">
+
+      <li>
+        <div
+          class="fbt-product fbt-product--checked"
+          data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+          data-price="{{ product.selected_or_first_available_variant.price }}"
+        >
+          <label class="fbt-product__checkbox-wrap" title="{{ product.title | escape }}">
+            <input
+              type="checkbox"
+              class="fbt-product__checkbox"
+              checked
+              aria-label="Include {{ product.title | escape }} in bundle"
+            >
+          </label>
+          <div class="fbt-product__image-wrapper">
+            {%- if product.featured_image -%}
+              {{
+                product.featured_image
+                | image_url: width: 400
+                | image_tag:
+                  class: 'fbt-product__image',
+                  alt: product.featured_image.alt | default: product.title | escape,
+                  loading: 'lazy',
+                  width: 200,
+                  height: 200
+              }}
+            {%- else -%}
+              <div class="fbt-product__no-image" role="img" aria-label="{{ product.title | escape }}"></div>
+            {%- endif -%}
+          </div>
+          <div class="fbt-product__info">
+            <p class="fbt-product__title">
+              <a href="{{ product.url }}">{{ product.title }}</a>
+            </p>
+            <p class="fbt-product__price">{{ product.selected_or_first_available_variant.price | money }}</p>
+          </div>
+        </div>
+      </li>
+
+      {%- for comp_product in fbt_complementary limit: 2 -%}
+        <li class="fbt-separator-item" aria-hidden="true">
+          <span class="fbt-separator">+</span>
+        </li>
+        <li>
+          <div
+            class="fbt-product fbt-product--checked"
+            data-variant-id="{{ comp_product.selected_or_first_available_variant.id }}"
+            data-price="{{ comp_product.selected_or_first_available_variant.price }}"
+          >
+            <label class="fbt-product__checkbox-wrap" title="{{ comp_product.title | escape }}">
+              <input
+                type="checkbox"
+                class="fbt-product__checkbox"
+                checked
+                aria-label="Include {{ comp_product.title | escape }} in bundle"
+              >
+            </label>
+            <div class="fbt-product__image-wrapper">
+              {%- if comp_product.featured_image -%}
+                {{
+                  comp_product.featured_image
+                  | image_url: width: 400
+                  | image_tag:
+                    class: 'fbt-product__image',
+                    alt: comp_product.featured_image.alt | default: comp_product.title | escape,
+                    loading: 'lazy',
+                    width: 200,
+                    height: 200
+                }}
+              {%- else -%}
+                <div class="fbt-product__no-image" role="img" aria-label="{{ comp_product.title | escape }}"></div>
+              {%- endif -%}
+            </div>
+            <div class="fbt-product__info">
+              <p class="fbt-product__title">
+                <a href="{{ comp_product.url }}">{{ comp_product.title }}</a>
+              </p>
+              <p class="fbt-product__price">{{ comp_product.selected_or_first_available_variant.price | money }}</p>
+            </div>
+          </div>
+        </li>
+      {%- endfor -%}
+
+    </ul>
+
+    <div class="fbt-footer">
+      <p class="fbt-total">
+        <span class="fbt-total__label">Bundle total:</span>
+        <span class="fbt-total__price" data-fbt-total>
+          {%- liquid
+            assign fbt_total = product.selected_or_first_available_variant.price
+            for comp_product in fbt_complementary limit: 2
+              assign fbt_total = fbt_total | plus: comp_product.selected_or_first_available_variant.price
+            endfor
+          -%}
+          {{ fbt_total | money }}
+        </span>
+      </p>
+
+      <button
+        type="button"
+        class="fbt-btn button"
+        data-fbt-add
+        aria-label="Add bundle to cart"
+      >
+        Add Bundle to Cart
+      </button>
+    </div>
+
+    <p class="fbt-live" aria-live="polite" aria-atomic="true" data-fbt-live></p>
+
+  </fbt-bundle>
+</div>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Frequently Bought Together",
+  "tag": "section",
+  "class": "fbt-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently Bought Together"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Frequently Bought Together"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}
