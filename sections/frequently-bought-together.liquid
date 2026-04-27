@@ -1,5 +1,5 @@
 {%- liquid
-  assign fbt_complementary = product.metafields.custom.complementary_products.value
+  assign fbt_complementary = product.metafields.custom.complementary_products.value | default: blank
 -%}
 
 {%- if fbt_complementary != blank -%}
