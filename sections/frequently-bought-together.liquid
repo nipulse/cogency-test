@@ -97,6 +97,19 @@
     opacity: 0.45;
   }
 
+  .fbt-product--unavailable {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .fbt-product__sold-out {
+    font-size: 0.75rem;
+    margin: 0;
+    color: var(--color-foreground);
+    opacity: 0.6;
+    font-style: italic;
+  }
+
   .fbt-product__image {
     width: 100%;
     height: 100%;
@@ -183,6 +196,14 @@
     border-color: var(--color-success, #1a8a4a) !important;
   }
 
+  .fbt-error {
+    font-size: 0.8125rem;
+    color: var(--color-error, #c40000);
+    margin: 0;
+    min-height: 1.25em;
+    text-align: center;
+  }
+
   .fbt-live {
     position: absolute;
     width: 1px;
@@ -257,8 +278,9 @@
 
       <li>
         {%- assign fbt_main_alt = product.featured_image.alt | default: product.title | escape -%}
+        {%- assign fbt_main_available = product.selected_or_first_available_variant.available -%}
         <div
-          class="fbt-product fbt-product--checked"
+          class="fbt-product{% if fbt_main_available %} fbt-product--checked{% else %} fbt-product--unavailable{% endif %}"
           data-variant-id="{{ product.selected_or_first_available_variant.id }}"
           data-price="{{ product.selected_or_first_available_variant.price }}"
         >
@@ -266,7 +288,7 @@
             <input
               type="checkbox"
               class="fbt-product__checkbox"
-              checked
+              {% if fbt_main_available %}checked{% else %}disabled{% endif %}
               aria-label="Include {{ product.title | escape }} in bundle"
             >
           </label>
@@ -290,19 +312,24 @@
             <p class="fbt-product__title">
               <a href="{{ product.url }}">{{ product.title }}</a>
             </p>
-            <p class="fbt-product__price">{{ product.selected_or_first_available_variant.price | money }}</p>
+            {%- if fbt_main_available -%}
+              <p class="fbt-product__price">{{ product.selected_or_first_available_variant.price | money }}</p>
+            {%- else -%}
+              <p class="fbt-product__sold-out">Sold out</p>
+            {%- endif -%}
           </div>
         </div>
       </li>
 
       {%- for comp_product in fbt_complementary limit: 2 -%}
         {%- assign fbt_comp_alt = comp_product.featured_image.alt | default: comp_product.title | escape -%}
+        {%- assign fbt_comp_available = comp_product.selected_or_first_available_variant.available -%}
         <li class="fbt-separator-item" aria-hidden="true">
           <span class="fbt-separator">+</span>
         </li>
         <li>
           <div
-            class="fbt-product fbt-product--checked"
+            class="fbt-product{% if fbt_comp_available %} fbt-product--checked{% else %} fbt-product--unavailable{% endif %}"
             data-variant-id="{{ comp_product.selected_or_first_available_variant.id }}"
             data-price="{{ comp_product.selected_or_first_available_variant.price }}"
           >
@@ -310,7 +337,7 @@
               <input
                 type="checkbox"
                 class="fbt-product__checkbox"
-                checked
+                {% if fbt_comp_available %}checked{% else %}disabled{% endif %}
                 aria-label="Include {{ comp_product.title | escape }} in bundle"
               >
             </label>
@@ -334,7 +361,11 @@
               <p class="fbt-product__title">
                 <a href="{{ comp_product.url }}">{{ comp_product.title }}</a>
               </p>
-              <p class="fbt-product__price">{{ comp_product.selected_or_first_available_variant.price | money }}</p>
+              {%- if fbt_comp_available -%}
+                <p class="fbt-product__price">{{ comp_product.selected_or_first_available_variant.price | money }}</p>
+              {%- else -%}
+                <p class="fbt-product__sold-out">Sold out</p>
+              {%- endif -%}
             </div>
           </div>
         </li>
@@ -364,6 +395,8 @@
       >
         Add Bundle to Cart
       </button>
+
+      <p class="fbt-error" data-fbt-error></p>
     </div>
 
     <p class="fbt-live" aria-live="polite" aria-atomic="true" data-fbt-live></p>

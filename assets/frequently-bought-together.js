@@ -3,6 +3,7 @@ class FbtBundle extends HTMLElement {
     this._btn = this.querySelector('[data-fbt-add]');
     this._totalEl = this.querySelector('[data-fbt-total]');
     this._liveEl = this.querySelector('[data-fbt-live]');
+    this._errorEl = this.querySelector('[data-fbt-error]');
 
     this.querySelectorAll('.fbt-product__checkbox').forEach((checkbox) => {
       checkbox.addEventListener('change', (e) => this._onCheckboxChange(e));
@@ -11,10 +12,12 @@ class FbtBundle extends HTMLElement {
     this._btn?.addEventListener('click', () => this._addBundle());
   }
 
+  // Only include cards whose checkbox is checked AND not disabled (available)
   get _checkedCards() {
-    return [...this.querySelectorAll('.fbt-product')].filter(
-      (card) => card.querySelector('.fbt-product__checkbox')?.checked
-    );
+    return [...this.querySelectorAll('.fbt-product')].filter((card) => {
+      const checkbox = card.querySelector('.fbt-product__checkbox');
+      return checkbox?.checked && !checkbox.disabled;
+    });
   }
 
   _formatMoney(cents) {
@@ -32,7 +35,7 @@ class FbtBundle extends HTMLElement {
       card.classList.toggle('fbt-product--unchecked', !e.target.checked);
     }
     this._updateTotal();
-    this._clearLiveRegion();
+    this._clearError();
   }
 
   _updateTotal() {
@@ -59,6 +62,7 @@ class FbtBundle extends HTMLElement {
 
   _setSuccess() {
     if (!this._btn) return;
+    this._clearError();
     this._btn.classList.add('fbt-btn--success');
     this._btn.textContent = 'Added to Cart!';
     this._announce('Bundle added to cart successfully.');
@@ -70,7 +74,13 @@ class FbtBundle extends HTMLElement {
 
   _setError(message) {
     if (this._btn) this._btn.textContent = this._btn.dataset.originalText || 'Add Bundle to Cart';
-    this._announce(message || 'Something went wrong. Please try again.');
+    const text = message || 'Something went wrong. Please try again.';
+    if (this._errorEl) this._errorEl.textContent = text;
+    this._announce(text);
+  }
+
+  _clearError() {
+    if (this._errorEl) this._errorEl.textContent = '';
   }
 
   // rAF trick forces screen readers to re-announce if the same message appears twice
@@ -85,14 +95,10 @@ class FbtBundle extends HTMLElement {
     }, 5000);
   }
 
-  _clearLiveRegion() {
-    if (this._liveEl) this._liveEl.textContent = '';
-  }
-
   async _addBundle() {
     const cards = this._checkedCards;
     if (!cards.length) {
-      this._announce('Please select at least one product to add to your cart.');
+      this._setError('Please select at least one available product.');
       return;
     }
 
@@ -114,6 +120,7 @@ class FbtBundle extends HTMLElement {
     if (sectionIds.length) payload.sections = sectionIds.join(',');
 
     this._setLoading(true);
+    this._clearError();
 
     try {
       const response = await fetch('/cart/add.js', {
