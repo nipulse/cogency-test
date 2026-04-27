@@ -270,13 +270,6 @@
         "padding-block-end": 0
       }
     },
-    "frequently_bought_together": {
-      "type": "frequently-bought-together",
-      "settings": {
-        "heading": "Frequently Bought Together",
-        "color_scheme": "scheme-1"
-      }
-    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -417,11 +410,19 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "frequently_bought_together_fXCfGq": {
+      "type": "frequently-bought-together",
+      "name": "Frequently Bought Together",
+      "settings": {
+        "heading": "Frequently Bought Together",
+        "color_scheme": ""
+      }
     }
   },
   "order": [
     "main",
-    "frequently_bought_together",
-    "product_recommendations_qggXJq"
+    "product_recommendations_qggXJq",
+    "frequently_bought_together_fXCfGq"
   ]
 }
