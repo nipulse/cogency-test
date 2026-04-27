@@ -256,6 +256,7 @@
     <ul class="fbt-products" role="list" aria-label="Bundle products">
 
       <li>
+        {%- assign fbt_main_alt = product.featured_image.alt | default: product.title | escape -%}
         <div
           class="fbt-product fbt-product--checked"
           data-variant-id="{{ product.selected_or_first_available_variant.id }}"
@@ -276,7 +277,7 @@
                 | image_url: width: 400
                 | image_tag:
                   class: 'fbt-product__image',
-                  alt: product.featured_image.alt | default: product.title | escape,
+                  alt: fbt_main_alt,
                   loading: 'lazy',
                   width: 200,
                   height: 200
@@ -295,6 +296,7 @@
       </li>
 
       {%- for comp_product in fbt_complementary limit: 2 -%}
+        {%- assign fbt_comp_alt = comp_product.featured_image.alt | default: comp_product.title | escape -%}
         <li class="fbt-separator-item" aria-hidden="true">
           <span class="fbt-separator">+</span>
         </li>
@@ -319,7 +321,7 @@
                   | image_url: width: 400
                   | image_tag:
                     class: 'fbt-product__image',
-                    alt: comp_product.featured_image.alt | default: comp_product.title | escape,
+                    alt: fbt_comp_alt,
                     loading: 'lazy',
                     width: 200,
                     height: 200
